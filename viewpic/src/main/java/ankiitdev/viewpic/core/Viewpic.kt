@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.widget.ImageView
-import ankiitdev.viewpic.cache.CacheRepository
-import ankiitdev.viewpic.cache.Config
+import ankiitdev.viewpic.repo.CacheRepository
+import ankiitdev.viewpic.utils.CacheConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -69,19 +69,9 @@ class Viewpic private constructor(context: Context, cacheSize: Int) {
     }
 
     companion object {
-//        private val INSTANCE: Viewpic? = null
-//
-//        @Synchronized
-//        fun getInstance(context: Context, cacheSize: Int = Config.defaultCacheSize): Viewpic {
-//            return INSTANCE?.let { return INSTANCE }
-//                ?: run {
-//                    return Viewpic(context, cacheSize)
-//                }
-//        }
-        fun getInstance(context: Context, cacheSize: Int = Config.defaultCacheSize): Viewpic {
+        fun getInstance(context: Context, cacheSize: Int = CacheConfig.defaultCacheSize): Viewpic {
             val instance: Viewpic by lazy { Viewpic(context, cacheSize) }
             return instance
         }
-
     }
 }

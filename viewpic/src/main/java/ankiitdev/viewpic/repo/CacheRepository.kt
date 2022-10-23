@@ -1,7 +1,10 @@
-package ankiitdev.viewpic.cache
+package ankiitdev.viewpic.repo
 
 import android.content.Context
 import android.graphics.Bitmap
+import ankiitdev.viewpic.cache.DiskCache
+import ankiitdev.viewpic.cache.ImageCache
+import ankiitdev.viewpic.cache.MemoryCache
 
 class CacheRepository constructor(context: Context, cacheSize: Int): ImageCache {
 

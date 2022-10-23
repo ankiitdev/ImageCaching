@@ -71,7 +71,7 @@ class DiskCache constructor(private val context: Context) : ImageCache {
         }
     }
 
-    fun md5(url: String): String? {
+    private fun md5(url: String): String? {
         try {
 
             // Static getInstance method is called with hashing MD5
@@ -97,15 +97,6 @@ class DiskCache constructor(private val context: Context) : ImageCache {
     }
 
     companion object {
-//        private val INSTANCE: DiskCache? = null
-//        @Synchronized
-//        fun getInstance(context: Context): DiskCache {
-//            return INSTANCE?.let { return INSTANCE }
-//                ?: run {
-//                    return DiskCache(context)
-//                }
-//        }
-
         fun getInstance(context: Context): DiskCache {
             val instance: DiskCache by lazy { DiskCache(context) }
             return instance

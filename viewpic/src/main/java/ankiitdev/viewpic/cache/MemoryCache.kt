@@ -3,14 +3,15 @@ package ankiitdev.viewpic.cache
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.collection.LruCache
+import ankiitdev.viewpic.utils.CacheConfig
 
 class MemoryCache constructor(newMaxSize: Int): ImageCache {
 
     private val cache: LruCache<String, Bitmap>
 
     init {
-        val cacheSize : Int = if (newMaxSize > Config.maxMemory) {
-            Config.defaultCacheSize
+        val cacheSize : Int = if (newMaxSize > CacheConfig.maxMemory) {
+            CacheConfig.defaultCacheSize
                 Log.d("memory_cache","New value of cache is bigger than maximum cache available on system")
         } else {
             newMaxSize
