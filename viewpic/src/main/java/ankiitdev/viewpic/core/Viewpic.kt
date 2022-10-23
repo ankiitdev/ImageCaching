@@ -4,20 +4,16 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.widget.ImageView
-import ankiitdev.viewpic.DownloadImageTask
-import ankiitdev.viewpic.async.DownloadTask
 import ankiitdev.viewpic.cache.CacheRepository
 import ankiitdev.viewpic.cache.Config
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.concurrent.Future
 
 class Viewpic private constructor(context: Context, cacheSize: Int) {
     private val cache = CacheRepository(context, cacheSize)
-//    private val executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-    private val mRunningDownloadList:HashMap<String, Future<Bitmap?>> = hashMapOf()
 
     suspend fun displayImage(url: String, imageview: ImageView, placeholder: Int?) {
         val bitmap = cache.getImage(url)
@@ -29,8 +25,10 @@ class Viewpic private constructor(context: Context, cacheSize: Int) {
                 imageview.tag = url
                 if (placeholder != null)
                     imageview.setImageResource(placeholder)
-//                addDownloadImageTask( url, DownloadImageTask(url , imageview , cache))
-                downloadImages(url , imageview , cache)
+                withContext(Dispatchers.IO) {
+                    downloadImages(url, imageview, cache)
+                }
+
             }
 
     }
@@ -42,56 +40,48 @@ class Viewpic private constructor(context: Context, cacheSize: Int) {
                 val imageUrl = URL(url)
                 val conn: HttpURLConnection =
                     imageUrl.openConnection() as HttpURLConnection
-                bitmap = BitmapFactory.decodeStream(conn.inputStream)
+                val bitmapBody = BitmapFactory.decodeStream(conn.inputStream)
                 conn.disconnect()
+                bitmap = compressBitmap(bitmapBody, 90)
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
         bitmap?.let {
             if (imageView.tag == url) {
-                imageView.setImageBitmap(bitmap)
+                withContext(Dispatchers.Main) {
+                    imageView.setImageBitmap(it)
+                }
             }
             cache.addImage(url, it)
         }
     }
 
-
-    private fun addDownloadImageTask(url: String, downloadTask: DownloadTask<Bitmap?>) {
-//        mRunningDownloadList[url] = executorService.submit(downloadTask)
+    private fun compressBitmap(bitmap: Bitmap?, quality: Int): Bitmap? {
+        val stream = ByteArrayOutputStream()
+        bitmap?.compress(Bitmap.CompressFormat.JPEG, quality, stream)
+        val byteArray = stream.toByteArray()
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 
-    fun clearcache() {
+    fun clearCache() {
         cache.clearImages()
     }
 
-    fun cancelTask(url: String){
-        synchronized(this){
-            mRunningDownloadList.forEach {
-                if (it.key == url && !it.value.isDone)
-                    it.value.cancel(true)
-            }
-        }
-    }
-
-    fun cancelAll() {
-        synchronized (this) {
-            mRunningDownloadList.forEach{
-                if ( !it.value.isDone)
-                    it.value.cancel(true)
-            }
-            mRunningDownloadList.clear()
-        }
-    }
-
     companion object {
-        private val INSTANCE: Viewpic? = null
-        @Synchronized
+//        private val INSTANCE: Viewpic? = null
+//
+//        @Synchronized
+//        fun getInstance(context: Context, cacheSize: Int = Config.defaultCacheSize): Viewpic {
+//            return INSTANCE?.let { return INSTANCE }
+//                ?: run {
+//                    return Viewpic(context, cacheSize)
+//                }
+//        }
         fun getInstance(context: Context, cacheSize: Int = Config.defaultCacheSize): Viewpic {
-            return INSTANCE?.let { return INSTANCE }
-                ?: run {
-                    return Viewpic(context, cacheSize)
-                }
+            val instance: Viewpic by lazy { Viewpic(context, cacheSize) }
+            return instance
         }
+
     }
 }

@@ -49,16 +49,22 @@ class DiskCache constructor(private val context: Context) : ImageCache {
 
     override fun clearImages() {
         cache.delete()
-        cache = DiskLruCache.open(context.cacheDir, 1, 1,
-            10 * 1024 * 1024)
+        cache = DiskLruCache.open(
+            context.cacheDir, 1, 1,
+            10 * 1024 * 1024
+        )
     }
 
-    private fun writeBitmapToFile(bitmap: Bitmap, editor:
-    DiskLruCache.Editor): Boolean {
+    private fun writeBitmapToFile(
+        bitmap: Bitmap, editor:
+        DiskLruCache.Editor
+    ): Boolean {
         var out: OutputStream? = null
         try {
-            out = BufferedOutputStream(editor.newOutputStream(0), 8 *
-                    1024)
+            out = BufferedOutputStream(
+                editor.newOutputStream(0), 8 *
+                        1024
+            )
             return bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
         } finally {
             out?.close()
@@ -91,13 +97,19 @@ class DiskCache constructor(private val context: Context) : ImageCache {
     }
 
     companion object {
-        private val INSTANCE: DiskCache? = null
-        @Synchronized
+//        private val INSTANCE: DiskCache? = null
+//        @Synchronized
+//        fun getInstance(context: Context): DiskCache {
+//            return INSTANCE?.let { return INSTANCE }
+//                ?: run {
+//                    return DiskCache(context)
+//                }
+//        }
+
         fun getInstance(context: Context): DiskCache {
-            return INSTANCE?.let { return INSTANCE }
-                ?: run {
-                    return DiskCache(context)
-                }
+            val instance: DiskCache by lazy { DiskCache(context) }
+            return instance
         }
+
     }
 }
