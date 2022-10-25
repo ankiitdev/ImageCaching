@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import ankiitdev.viewpic.core.Viewpic
 import ankiitdev.viewpic.databinding.ActivityMainBinding

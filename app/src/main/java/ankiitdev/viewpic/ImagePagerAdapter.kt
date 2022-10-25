@@ -5,27 +5,24 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ankiitdev.viewpic.core.Viewpic
+import ankiitdev.viewpic.core.loadImage
 import ankiitdev.viewpic.databinding.ItemImageBinding
-import ankiitdev.viewpic.model.UnsplashImage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import ankiitdev.viewpic.model.Hits
 
 class ImagePagerAdapter :
-    PagingDataAdapter<UnsplashImage, ImagePagerAdapter.ImageViewHolder>(
+    PagingDataAdapter<Hits, ImagePagerAdapter.ImageViewHolder>(
         object :
-            DiffUtil.ItemCallback<UnsplashImage>() {
+            DiffUtil.ItemCallback<Hits>() {
             override fun areItemsTheSame(
-                oldItem: UnsplashImage,
-                newItem: UnsplashImage
+                oldItem: Hits,
+                newItem: Hits
             ): Boolean {
                 return oldItem.id == newItem.id
             }
 
             override fun areContentsTheSame(
-                oldItem: UnsplashImage,
-                newItem: UnsplashImage
+                oldItem: Hits,
+                newItem: Hits
             ): Boolean {
                 return oldItem == newItem
             }
@@ -49,15 +46,9 @@ class ImagePagerAdapter :
         private val binding: ItemImageBinding
     ) :
         RecyclerView.ViewHolder(binding.root) {
-
-        fun setData(image: UnsplashImage?) {
-
-            CoroutineScope(Dispatchers.Main).launch {
-                Viewpic
-                    .getInstance(context = binding.root.context, 10 * 1024 * 1024)
-                    .displayImage(image?.urls?.regular.orEmpty(), binding.imageView, null)
-            }
-
+        fun setData(image: Hits?) {
+            binding.imageView.loadImage(image?.userImageURL.orEmpty(), null)
+            binding.textId.text = image?.id.toString()
         }
     }
 }

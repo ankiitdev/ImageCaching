@@ -6,7 +6,9 @@ import android.graphics.BitmapFactory
 import android.widget.ImageView
 import ankiitdev.viewpic.repo.CacheRepository
 import ankiitdev.viewpic.utils.CacheConfig
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection

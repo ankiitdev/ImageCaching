@@ -15,4 +15,12 @@ interface UnsplashApi {
         @Query("per_page") perPage: Int
     ): List<UnsplashImage>
 
+    @GET("/api")
+    suspend fun getPixabayImages(
+        @Query("key") key: String,
+        @Query("image_type") imageType: String,
+        @Query("page") page: Int,
+        @Query("per_page") perPage: Int
+    ): UnsplashImage
+
 }
