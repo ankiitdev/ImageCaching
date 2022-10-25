@@ -16,7 +16,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.Cache
 import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
@@ -40,7 +39,7 @@ object NetworkModule {
             .addInterceptor(ChuckInterceptor(context))
             .addInterceptor(forceCacheInterceptor)
             .addNetworkInterceptor(cacheInterceptor)
-            .cache(Cache(context.cacheDir, (10*10*1024).toLong()))
+            .cache(Cache(context.cacheDir, (10 * 10 * 1024).toLong()))
             .build()
     }
 
@@ -50,7 +49,7 @@ object NetworkModule {
         okHttpClient: OkHttpClient,
         apiBaseUrl: String
     ): Retrofit {
-        val contentType = "application/json".toMediaType()
+        val contentType = MediaType.get("application/json")
         val json = Json {
             ignoreUnknownKeys = true
         }

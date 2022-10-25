@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ankiitdev.viewpic.core.loadImage
 import ankiitdev.viewpic.databinding.ItemImageBinding
 import ankiitdev.viewpic.model.Hits
 

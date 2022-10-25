@@ -5,6 +5,7 @@ plugins {
     id("kotlin-kapt")
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("maven-publish")
 }
 
 android {
@@ -35,18 +36,30 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+
 }
 
 dependencies {
     implementation(Libs.coreKtx)
-    implementation(Libs.appcompat)
-    implementation(Libs.MDC)
     implementation(Libs.lifecycleCommon)
     implementation(Libs.lifecycleExtension)
-    implementation(Libs.lifecycleLiveDataKtx)
     implementation("com.jakewharton:disklrucache:2.0.2")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+}
 
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components.findByName("release"))
+            groupId = "com.github.ankiitdev"
+            artifactId = "viewpic"
+            version = "1.0"
+        }
+    }
 }
