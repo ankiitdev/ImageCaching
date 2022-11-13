@@ -6,9 +6,7 @@ import android.graphics.BitmapFactory
 import android.widget.ImageView
 import ankiitdev.viewpic.repo.CacheRepository
 import ankiitdev.viewpic.utils.CacheConfig
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
@@ -22,29 +20,25 @@ class Viewpic private constructor(context: Context, cacheSize: Int) {
         bitmap?.let {
             imageview.setImageBitmap(it)
             return
-        }
-            ?: run {
-                imageview.tag = url
-                if (placeholder != null)
-                    imageview.setImageResource(placeholder)
-                withContext(Dispatchers.IO) {
-                    downloadImages(url, imageview, cache)
-                }
-
+        } ?: run {
+            imageview.tag = url
+            if (placeholder != null) imageview.setImageResource(placeholder)
+            withContext(Dispatchers.IO) {
+                downloadImages(url, imageview, cache)
             }
-
+        }
     }
 
     private suspend fun downloadImages(url: String, imageView: ImageView, cache: CacheRepository) {
         var bitmap: Bitmap? = null
+        val imageQuality = 90
         try {
             withContext(Dispatchers.IO) {
                 val imageUrl = URL(url)
-                val conn: HttpURLConnection =
-                    imageUrl.openConnection() as HttpURLConnection
+                val conn: HttpURLConnection = imageUrl.openConnection() as HttpURLConnection
                 val bitmapBody = BitmapFactory.decodeStream(conn.inputStream)
                 conn.disconnect()
-                bitmap = compressBitmap(bitmapBody, 90)
+                bitmap = imageQuality.compressBitmap(bitmapBody)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -59,9 +53,9 @@ class Viewpic private constructor(context: Context, cacheSize: Int) {
         }
     }
 
-    private fun compressBitmap(bitmap: Bitmap?, quality: Int): Bitmap? {
+    private fun Int.compressBitmap(bitmap: Bitmap?): Bitmap? {
         val stream = ByteArrayOutputStream()
-        bitmap?.compress(Bitmap.CompressFormat.JPEG, quality, stream)
+        bitmap?.compress(Bitmap.CompressFormat.JPEG, this, stream)
         val byteArray = stream.toByteArray()
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
